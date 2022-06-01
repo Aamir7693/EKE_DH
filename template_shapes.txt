@@ -1,0 +1,408 @@
+(comment "CPSA 3.6.9")
+(comment "Extracted shapes")
+
+(herald "Encrypted Key Exchange - Diffie-Hellman"
+  (algebra diffie-hellman) (reverse-nodes) (try-old-strands) (bound 20)
+  (limit 12000))
+
+(comment "CPSA 3.6.9")
+
+(comment "All input read from template.scm")
+
+(comment "Step count limited to 12000")
+
+(comment "Strand count bounded at 20")
+
+(comment "Old strands tried first")
+
+(comment "Younger nodes tried first")
+
+(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))
+
+(defskeleton EKE_DH
+  (vars (r1 r2 r1-0 r2-0 text) (a b name) (g h base) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1-0) (r2 r2) (a a) (b b) (g g) (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2-0) (a a) (b b) (h h) (sec1 sec1))
+  (absent (sec1 h))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1)
+  (uniq-orig r1 r2)
+  (comment "---For Testing only Client and Server's point-of-view")
+  (traces
+    ((send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1-0 (exp g sec))))
+      (send (enc r1-0 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    ((recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2-0 (exp h sec1))) (send (enc r2-0 (exp h sec1)))))
+  (label 0)
+  (unrealized (0 1) (0 3) (1 0) (1 2))
+  (origs (r1 (1 1)) (r2 (0 2)))
+  (comment "3 in cohort - 3 not yet seen"))
+
+(defskeleton EKE_DH
+  (vars (r1 r2 text) (a b name) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1))
+    (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec))
+    (sec1 sec1))
+  (precedes ((0 0) (1 0)) ((0 2) (1 2)) ((1 1) (0 1)) ((1 3) (0 3)))
+  (absent (sec1 (exp (gen) sec)))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1)
+  (uniq-orig r1 r2)
+  (operation encryption-test (displaced 2 1 server 2)
+    (enc r1-0 (exp (gen) (mul sec sec1-0))) (0 1))
+  (traces
+    ((send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv
+        (cat (enc (exp (gen) sec1) (ltk a b))
+          (enc r1 (exp (gen) (mul sec sec1)))))
+      (send (enc r1 r2 (exp (gen) (mul sec sec1))))
+      (recv (enc r2 (exp (gen) (mul sec sec1)))))
+    ((recv (cat a (enc (exp (gen) sec) (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b))
+          (enc r1 (exp (gen) (mul sec sec1)))))
+      (recv (enc r1 r2 (exp (gen) (mul sec sec1))))
+      (send (enc r2 (exp (gen) (mul sec sec1))))))
+  (label 10)
+  (parent 0)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1)
+      ((a a) (b b) (sec sec) (sec1 sec1) (r1 r1) (r2 r2)
+        (g (exp (gen) sec1)) (r1-0 r1) (h (exp (gen) sec)) (r2-0 r2))))
+  (origs (r1 (1 1)) (r2 (0 2))))
+
+(defskeleton EKE_DH
+  (vars (r1 r2 r2-0 r1-0 text) (a b name) (sec sec1 sec1-0 sec-0 rndx))
+  (defstrand client 4 (r1 r1-0) (r2 r2) (a a) (b b) (g (exp (gen) sec1))
+    (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2-0) (a a) (b b)
+    (h (exp (gen) sec-0)) (sec1 sec1-0))
+  (defstrand server 4 (r1 r1-0) (r2 r2) (a a) (b b) (h (exp (gen) sec))
+    (sec1 sec1))
+  (defstrand client 3 (r1 r1) (r2 r2-0) (a a) (b b)
+    (g (exp (gen) sec1-0)) (sec sec-0))
+  (precedes ((0 0) (2 0)) ((0 2) (2 2)) ((1 1) (3 1)) ((2 1) (0 1))
+    ((2 3) (0 3)) ((3 0) (1 0)) ((3 2) (1 2)))
+  (absent (sec1 (exp (gen) sec)) (sec1-0 (exp (gen) sec-0)))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1 sec1-0 sec-0)
+  (uniq-orig r1 r2)
+  (operation encryption-test (displaced 4 3 client 1)
+    (enc (exp (gen) sec-1) (ltk a-0 b-0)) (1 0))
+  (traces
+    ((send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv
+        (cat (enc (exp (gen) sec1) (ltk a b))
+          (enc r1-0 (exp (gen) (mul sec sec1)))))
+      (send (enc r1-0 r2 (exp (gen) (mul sec sec1))))
+      (recv (enc r2 (exp (gen) (mul sec sec1)))))
+    ((recv (cat a (enc (exp (gen) sec-0) (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1-0) (ltk a b))
+          (enc r1 (exp (gen) (mul sec1-0 sec-0)))))
+      (recv (enc r1 r2-0 (exp (gen) (mul sec1-0 sec-0))))
+      (send (enc r2-0 (exp (gen) (mul sec1-0 sec-0)))))
+    ((recv (cat a (enc (exp (gen) sec) (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b))
+          (enc r1-0 (exp (gen) (mul sec sec1)))))
+      (recv (enc r1-0 r2 (exp (gen) (mul sec sec1))))
+      (send (enc r2 (exp (gen) (mul sec sec1)))))
+    ((send (cat a (enc (exp (gen) sec-0) (ltk a b))))
+      (recv
+        (cat (enc (exp (gen) sec1-0) (ltk a b))
+          (enc r1 (exp (gen) (mul sec1-0 sec-0)))))
+      (send (enc r1 r2-0 (exp (gen) (mul sec1-0 sec-0))))))
+  (label 48)
+  (parent 0)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1)
+      ((a a) (b b) (sec sec) (sec1 sec1-0) (r1 r1) (r2 r2)
+        (g (exp (gen) sec1)) (r1-0 r1-0) (h (exp (gen) sec-0))
+        (r2-0 r2-0))))
+  (origs (r1 (1 1)) (r2 (0 2))))
+
+(comment "Nothing left to do")
+
+(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))
+
+(defskeleton EKE_DH
+  (vars (r2 r1 text) (a b name) (g base) (sec rndx))
+  (defstrand client 4 (r1 r1) (r2 r2) (a a) (b b) (g g) (sec sec))
+  (non-orig (ltk a b))
+  (uniq-gen sec)
+  (uniq-orig r2)
+  (comment "---Client's point-of-view")
+  (traces
+    ((send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec)))))
+  (label 2913)
+  (unrealized (0 1) (0 3))
+  (origs (r2 (0 2)))
+  (comment "2 in cohort - 2 not yet seen"))
+
+(defskeleton EKE_DH
+  (vars (r2 r1 text) (a b name) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1))
+    (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec))
+    (sec1 sec1))
+  (precedes ((0 0) (1 0)) ((0 2) (1 2)) ((1 1) (0 1)) ((1 3) (0 3)))
+  (absent (sec1 (exp (gen) sec)))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1)
+  (uniq-orig r2)
+  (operation encryption-test (displaced 2 1 server 2)
+    (enc r1-0 (exp (gen) (mul sec sec1-0))) (0 1))
+  (traces
+    ((send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv
+        (cat (enc (exp (gen) sec1) (ltk a b))
+          (enc r1 (exp (gen) (mul sec sec1)))))
+      (send (enc r1 r2 (exp (gen) (mul sec sec1))))
+      (recv (enc r2 (exp (gen) (mul sec sec1)))))
+    ((recv (cat a (enc (exp (gen) sec) (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b))
+          (enc r1 (exp (gen) (mul sec sec1)))))
+      (recv (enc r1 r2 (exp (gen) (mul sec sec1))))
+      (send (enc r2 (exp (gen) (mul sec sec1))))))
+  (label 2920)
+  (parent 2913)
+  (unrealized)
+  (shape)
+  (maps
+    ((0) ((a a) (b b) (sec sec) (r2 r2) (g (exp (gen) sec1)) (r1 r1))))
+  (origs (r2 (0 2))))
+
+(comment "Nothing left to do")
+
+(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))
+
+(defskeleton EKE_DH
+  (vars (r1 r2 text) (a b name) (h base) (sec1 rndx))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h h) (sec1 sec1))
+  (absent (sec1 h))
+  (non-orig (ltk a b))
+  (uniq-gen sec1)
+  (uniq-orig r1)
+  (comment "---Server's point-of-view")
+  (traces
+    ((recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1)))))
+  (label 2985)
+  (unrealized (0 0) (0 2))
+  (origs (r1 (0 1)))
+  (comment "2 in cohort - 2 not yet seen"))
+
+(defskeleton EKE_DH
+  (vars (r1 r2 text) (a b name) (sec1 sec rndx))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec))
+    (sec1 sec1))
+  (defstrand client 3 (r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1))
+    (sec sec))
+  (precedes ((0 1) (1 1)) ((1 0) (0 0)) ((1 2) (0 2)))
+  (absent (sec1 (exp (gen) sec)))
+  (non-orig (ltk a b))
+  (uniq-gen sec1 sec)
+  (uniq-orig r1)
+  (operation encryption-test (displaced 2 1 client 1)
+    (enc (exp (gen) sec-0) (ltk a-0 b-0)) (0 0))
+  (traces
+    ((recv (cat a (enc (exp (gen) sec) (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b))
+          (enc r1 (exp (gen) (mul sec1 sec)))))
+      (recv (enc r1 r2 (exp (gen) (mul sec1 sec))))
+      (send (enc r2 (exp (gen) (mul sec1 sec)))))
+    ((send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv
+        (cat (enc (exp (gen) sec1) (ltk a b))
+          (enc r1 (exp (gen) (mul sec1 sec)))))
+      (send (enc r1 r2 (exp (gen) (mul sec1 sec))))))
+  (label 2988)
+  (parent 2985)
+  (unrealized)
+  (shape)
+  (maps
+    ((0) ((a a) (b b) (sec1 sec1) (r1 r1) (h (exp (gen) sec)) (r2 r2))))
+  (origs (r1 (0 1))))
+
+(comment "Nothing left to do")
+
+(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))
+
+(defskeleton EKE_DH
+  (vars (r1 r2 r1-0 r2-0 text) (a b name) (g h base) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1-0) (r2 r2) (a a) (b b) (g g) (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2-0) (a a) (b b) (h h) (sec1 sec1))
+  (deflistener sec)
+  (deflistener sec1)
+  (absent (sec1 h))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1)
+  (uniq-orig r1 r2)
+  (comment "For Testing only--- Client and Server's point-of-view")
+  (traces
+    ((send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1-0 (exp g sec))))
+      (send (enc r1-0 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    ((recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2-0 (exp h sec1))) (send (enc r2-0 (exp h sec1))))
+    ((recv sec) (send sec)) ((recv sec1) (send sec1)))
+  (label 3016)
+  (unrealized (0 1) (0 3) (1 0) (1 2) (2 0) (3 0))
+  (preskeleton)
+  (origs (r1 (1 1)) (r2 (0 2)))
+  (comment "Not a skeleton"))
+
+(comment "Nothing left to do")
+
+(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))
+
+(defskeleton EKE_DH
+  (vars (r2 r1 text) (a b name) (g base) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1) (r2 r2) (a a) (b b) (g g) (sec sec))
+  (deflistener sec)
+  (deflistener sec1)
+  (non-orig (ltk a b))
+  (uniq-gen sec)
+  (uniq-orig r2)
+  (comment
+    "Client's point-of-view.---Are the secrets sec & sec1 leaked?")
+  (traces
+    ((send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    ((recv sec) (send sec)) ((recv sec1) (send sec1)))
+  (label 3134)
+  (unrealized (0 1) (0 3) (1 0))
+  (preskeleton)
+  (origs (r2 (0 2)))
+  (comment "Not a skeleton"))
+
+(comment "Nothing left to do")
+
+(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))
+
+(defskeleton EKE_DH
+  (vars (r1 r2 text) (a b name) (h base) (sec sec1 rndx))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h h) (sec1 sec1))
+  (deflistener sec)
+  (deflistener sec1)
+  (absent (sec1 h))
+  (non-orig (ltk a b))
+  (uniq-gen sec1)
+  (uniq-orig r1)
+  (comment
+    "Server's point-of-view.---Are the secrets sec & sec1 leaked?")
+  (traces
+    ((recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    ((recv sec) (send sec)) ((recv sec1) (send sec1)))
+  (label 3163)
+  (unrealized (0 0) (0 2) (2 0))
+  (preskeleton)
+  (origs (r1 (0 1)))
+  (comment "Not a skeleton"))
+
+(comment "Nothing left to do")

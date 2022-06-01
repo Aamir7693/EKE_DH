@@ -1,0 +1,972 @@
+<?xml version="1.0"?>
+<!-- CPSA 3.6.9 -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>Encrypted Key Exchange - Diffie-Hellman</title>
+ <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+ <style>
+  svg.diagram { border-width: 1px; border-style: solid }
+ </style>
+</head>
+<body>
+
+<pre>(comment &quot;CPSA 3.6.9&quot;)
+(comment &quot;Extracted shapes&quot;)
+(herald &quot;Encrypted Key Exchange - Diffie-Hellman&quot;
+  (algebra diffie-hellman) (reverse-nodes) (try-old-strands) (bound 20)
+  (limit 12000))
+(comment &quot;CPSA 3.6.9&quot;)
+(comment &quot;All input read from template.scm&quot;)
+(comment &quot;Step count limited to 12000&quot;)
+(comment &quot;Strand count bounded at 20&quot;)
+(comment &quot;Old strands tried first&quot;)
+(comment &quot;Younger nodes tried first&quot;)</pre>
+
+<p id="top">Trees: <a href="#t0">0</a> <a href="#t2913">2913</a> <a href="#t2985">2985</a> <a href="#t3016">3016</a> <a href="#t3134">3134</a> <a href="#t3163">3163</a>.</p>
+
+<p id="t0">Tree <a href="#top">0</a>, POV <a href="#k0">0</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='129.840pt' height='154.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 129.840 154.920' font-size='12.000'>
+  <text
+   x='89.880' y='101.040'
+   style='font-weight: bold; text-anchor: middle; fill: blue;'
+   onclick='window.open(&quot;#k48&quot;, &quot;_self&quot;)'>48</text>
+  <line
+   x1='39.960' y1='77.460' x2='89.880' y2='114.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='89.880' y='26.040'
+   style='font-weight: bold; text-anchor: middle; fill: blue;'
+   onclick='window.open(&quot;#k10&quot;, &quot;_self&quot;)'>10</text>
+  <line
+   x1='39.960' y1='77.460' x2='89.880' y2='39.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='39.960' y='63.540' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k0&quot;, &quot;_self&quot;)'>0</text>
+  </svg></div>
+
+<pre>(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))</pre>
+
+<p id="k0">Item <a href="#t0">0</a>, Children: <a href="#k10">10</a> <a href="#k48">48</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.880pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.880 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>(enc r2-0 (exp h sec1))</title>
+   <circle cx='139.920' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2-0 (exp h sec1))</title>
+   <circle style='fill: red;' cx='139.920' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1)))</title>
+   <circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc h (ltk a b)))</title>
+   <circle style='fill: red;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2 (exp g sec))</title>
+   <circle style='fill: red;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1-0 r2 (exp g sec))</title>
+   <circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>(cat (enc g (ltk a b)) (enc r1-0 (exp g sec)))</title>
+   <circle style='fill: red;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g><title>((r1 r1) (r2 r2-0) (a a) (b b) (h h) (sec1 sec1))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>server</text>
+   </g>
+  <g><title>((r1 r1-0) (r2 r2) (a a) (b b) (g g) (sec sec))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>client</text></g>
+  <text
+   x='89.940' y='39.960' style='text-anchor: middle;'>EKE_DH 0</text>
+  </svg></div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r1 r2 r1-0 r2-0 text) (a b name) (g h base) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1-0) (r2 r2) (a a) (b b) (g g) (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2-0) (a a) (b b) (h h) (sec1 sec1))
+  (absent (sec1 h))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1)
+  (uniq-orig r1 r2)
+  (comment &quot;---For Testing only Client and Server&apos;s point-of-view&quot;)
+  (label 0)
+  (unrealized (0 1) (0 3) (1 0) (1 2))
+  (origs (r1 (1 1)) (r2 (0 2)))
+  (comment &quot;3 in cohort - 3 not yet seen&quot;))</pre>
+
+<p id="k10">Item <a href="#t0">10</a>, Parent: <a href="#k0">0</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.880pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.880 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <path
+   d='M 139.920 339.960 Q 92.940 339.960 45.960 339.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(enc r2 (exp (gen) (mul sec sec1)))</title>
+   <circle cx='139.920' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2 (exp (gen) (mul sec sec1)))</title>
+   <circle style='fill: blue;' cx='139.920' cy='264.960' r='6.000'/></g>
+  <path
+   d='M 139.920 189.960 Q 92.940 189.960 45.960 189.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp (gen) (mul sec sec1))))</title>
+   <circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle style='fill: blue;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2 (exp (gen) (mul sec sec1)))</title>
+   <circle style='fill: blue;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <path
+   d='M 39.960 264.960 Q 86.940 264.960 133.920 264.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(enc r1 r2 (exp (gen) (mul sec sec1)))</title>
+   <circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp (gen) (mul sec sec1))))</title>
+   <circle style='fill: blue;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <path
+   d='M 39.960 114.960 Q 86.940 114.960 133.920 114.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec)) (sec1 sec1))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>server</text>
+   </g>
+  <g>
+   <title>((r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1)) (sec sec))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>client</text></g>
+  <text
+   x='89.940' y='39.960'
+   style='text-anchor: middle;'>EKE_DH 10 (realized)</text></svg></div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r1 r2 text) (a b name) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1))
+    (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec))
+    (sec1 sec1))
+  (precedes ((0 0) (1 0)) ((0 2) (1 2)) ((1 1) (0 1)) ((1 3) (0 3)))
+  (absent (sec1 (exp (gen) sec)))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1)
+  (uniq-orig r1 r2)
+  (operation encryption-test (displaced 2 1 server 2)
+    (enc r1-0 (exp (gen) (mul sec sec1-0))) (0 1))
+  (label 10)
+  (parent 0)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1)
+      ((a a) (b b) (sec sec) (sec1 sec1) (r1 r1) (r2 r2)
+        (g (exp (gen) sec1)) (r1-0 r1) (h (exp (gen) sec)) (r2-0 r2))))
+  (origs (r1 (1 1)) (r2 (0 2))))</pre>
+
+<p id="k48">Item <a href="#t0">48</a>, Parent: <a href="#k0">0</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='379.800pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 379.800 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='339.840' y1='114.960' x2='339.840' y2='264.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='239.880' y1='114.960' x2='239.880' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <path
+   d='M 339.840 264.960 Q 242.880 227.460 145.920 264.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(enc r1 r2-0 (exp (gen) (mul sec1-0 sec-0)))</title>
+   <circle cx='339.840' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1-0) (ltk a b)) (enc r1 (exp (gen) (mul sec1-0 sec-0))))</title>
+   <circle style='fill: blue;' cx='339.840' cy='189.960' r='6.000'/></g>
+  <path
+   d='M 339.840 114.960 Q 242.880 77.460 145.920 114.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat a (enc (exp (gen) sec-0) (ltk a b)))</title>
+   <circle cx='339.840' cy='114.960' r='6.000'/></g>
+  <path
+   d='M 239.880 339.960 Q 142.920 302.460 45.960 339.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(enc r2 (exp (gen) (mul sec sec1)))</title>
+   <circle cx='239.880' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1-0 r2 (exp (gen) (mul sec sec1)))</title>
+   <circle style='fill: blue;' cx='239.880' cy='264.960' r='6.000'/></g>
+  <path
+   d='M 239.880 189.960 Q 142.920 152.460 45.960 189.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1-0 (exp (gen) (mul sec sec1))))</title>
+   <circle cx='239.880' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle style='fill: blue;' cx='239.880' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2-0 (exp (gen) (mul sec1-0 sec-0)))</title>
+   <circle cx='139.920' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2-0 (exp (gen) (mul sec1-0 sec-0)))</title>
+   <circle style='fill: blue;' cx='139.920' cy='264.960' r='6.000'/></g>
+  <path
+   d='M 139.920 189.960 Q 236.880 152.460 333.840 189.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g>
+   <title>(cat (enc (exp (gen) sec1-0) (ltk a b)) (enc r1 (exp (gen) (mul sec1-0 sec-0))))</title>
+   <circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec-0) (ltk a b)))</title>
+   <circle style='fill: blue;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2 (exp (gen) (mul sec sec1)))</title>
+   <circle style='fill: blue;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <path
+   d='M 39.960 264.960 Q 136.920 227.460 233.880 264.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(enc r1-0 r2 (exp (gen) (mul sec sec1)))</title>
+   <circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1-0 (exp (gen) (mul sec sec1))))</title>
+   <circle style='fill: blue;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <path
+   d='M 39.960 114.960 Q 136.920 77.460 233.880 114.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((r1 r1) (r2 r2-0) (a a) (b b) (g (exp (gen) sec1-0)) (sec sec-0))</title>
+   <text
+    x='339.840' y='77.460' style='text-anchor: middle;'>client</text>
+   </g>
+  <g>
+   <title>((r1 r1-0) (r2 r2) (a a) (b b) (h (exp (gen) sec)) (sec1 sec1))</title>
+   <text
+    x='239.880' y='77.460' style='text-anchor: middle;'>server</text>
+   </g>
+  <g>
+   <title>((r1 r1) (r2 r2-0) (a a) (b b) (h (exp (gen) sec-0)) (sec1 sec1-0))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>server</text>
+   </g>
+  <g>
+   <title>((r1 r1-0) (r2 r2) (a a) (b b) (g (exp (gen) sec1)) (sec sec))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>client</text></g>
+  <text
+   x='189.900' y='39.960'
+   style='text-anchor: middle;'>EKE_DH 48 (realized)</text></svg></div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r1 r2 r2-0 r1-0 text) (a b name) (sec sec1 sec1-0 sec-0 rndx))
+  (defstrand client 4 (r1 r1-0) (r2 r2) (a a) (b b) (g (exp (gen) sec1))
+    (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2-0) (a a) (b b)
+    (h (exp (gen) sec-0)) (sec1 sec1-0))
+  (defstrand server 4 (r1 r1-0) (r2 r2) (a a) (b b) (h (exp (gen) sec))
+    (sec1 sec1))
+  (defstrand client 3 (r1 r1) (r2 r2-0) (a a) (b b)
+    (g (exp (gen) sec1-0)) (sec sec-0))
+  (precedes ((0 0) (2 0)) ((0 2) (2 2)) ((1 1) (3 1)) ((2 1) (0 1))
+    ((2 3) (0 3)) ((3 0) (1 0)) ((3 2) (1 2)))
+  (absent (sec1 (exp (gen) sec)) (sec1-0 (exp (gen) sec-0)))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1 sec1-0 sec-0)
+  (uniq-orig r1 r2)
+  (operation encryption-test (displaced 4 3 client 1)
+    (enc (exp (gen) sec-1) (ltk a-0 b-0)) (1 0))
+  (label 48)
+  (parent 0)
+  (unrealized)
+  (shape)
+  (maps
+    ((0 1)
+      ((a a) (b b) (sec sec) (sec1 sec1-0) (r1 r1) (r2 r2)
+        (g (exp (gen) sec1)) (r1-0 r1-0) (h (exp (gen) sec-0))
+        (r2-0 r2-0))))
+  (origs (r1 (1 1)) (r2 (0 2))))</pre>
+
+<p id="t2913">Tree <a href="#top">2913</a>, POV <a href="#k2913">2913</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='129.840pt' height='79.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 129.840 79.920' font-size='12.000'>
+  <text
+   x='89.880' y='26.040'
+   style='font-weight: bold; text-anchor: middle; fill: blue;'
+   onclick='window.open(&quot;#k2920&quot;, &quot;_self&quot;)'>2920</text>
+  <line
+   x1='39.960' y1='39.960' x2='89.880' y2='39.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='39.960' y='26.040' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k2913&quot;, &quot;_self&quot;)'>2913</text>
+  </svg></div>
+
+<pre>(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))</pre>
+
+<p id="k2913">Item <a href="#t2913">2913</a>, Child: <a href="#k2920">2920</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='79.920pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 79.920 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>(enc r2 (exp g sec))</title>
+   <circle style='fill: red;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2 (exp g sec))</title>
+   <circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>(cat (enc g (ltk a b)) (enc r1 (exp g sec)))</title>
+   <circle style='fill: red;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g><title>((r1 r1) (r2 r2) (a a) (b b) (g g) (sec sec))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>client</text></g>
+  <text
+   x='39.960' y='39.960' style='text-anchor: middle;'>EKE_DH 2913</text>
+  </svg></div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r2 r1 text) (a b name) (g base) (sec rndx))
+  (defstrand client 4 (r1 r1) (r2 r2) (a a) (b b) (g g) (sec sec))
+  (non-orig (ltk a b))
+  (uniq-gen sec)
+  (uniq-orig r2)
+  (comment &quot;---Client&apos;s point-of-view&quot;)
+  (label 2913)
+  (unrealized (0 1) (0 3))
+  (origs (r2 (0 2)))
+  (comment &quot;2 in cohort - 2 not yet seen&quot;))</pre>
+
+<p id="k2920">Item <a href="#t2913">2920</a>, Parent: <a href="#k2913">2913</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.880pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.880 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <path
+   d='M 139.920 339.960 Q 92.940 339.960 45.960 339.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(enc r2 (exp (gen) (mul sec sec1)))</title>
+   <circle cx='139.920' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2 (exp (gen) (mul sec sec1)))</title>
+   <circle style='fill: blue;' cx='139.920' cy='264.960' r='6.000'/></g>
+  <path
+   d='M 139.920 189.960 Q 92.940 189.960 45.960 189.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp (gen) (mul sec sec1))))</title>
+   <circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle style='fill: blue;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2 (exp (gen) (mul sec sec1)))</title>
+   <circle style='fill: blue;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <path
+   d='M 39.960 264.960 Q 86.940 264.960 133.920 264.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(enc r1 r2 (exp (gen) (mul sec sec1)))</title>
+   <circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp (gen) (mul sec sec1))))</title>
+   <circle style='fill: blue;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <path
+   d='M 39.960 114.960 Q 86.940 114.960 133.920 114.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec)) (sec1 sec1))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>server</text>
+   </g>
+  <g>
+   <title>((r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1)) (sec sec))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>client</text></g>
+  <text
+   x='89.940' y='39.960'
+   style='text-anchor: middle;'>EKE_DH 2920 (realized)</text></svg>
+ </div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r2 r1 text) (a b name) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1))
+    (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec))
+    (sec1 sec1))
+  (precedes ((0 0) (1 0)) ((0 2) (1 2)) ((1 1) (0 1)) ((1 3) (0 3)))
+  (absent (sec1 (exp (gen) sec)))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1)
+  (uniq-orig r2)
+  (operation encryption-test (displaced 2 1 server 2)
+    (enc r1-0 (exp (gen) (mul sec sec1-0))) (0 1))
+  (label 2920)
+  (parent 2913)
+  (unrealized)
+  (shape)
+  (maps
+    ((0) ((a a) (b b) (sec sec) (r2 r2) (g (exp (gen) sec1)) (r1 r1))))
+  (origs (r2 (0 2))))</pre>
+
+<p id="t2985">Tree <a href="#top">2985</a>, POV <a href="#k2985">2985</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='129.840pt' height='79.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 129.840 79.920' font-size='12.000'>
+  <text
+   x='89.880' y='26.040'
+   style='font-weight: bold; text-anchor: middle; fill: blue;'
+   onclick='window.open(&quot;#k2988&quot;, &quot;_self&quot;)'>2988</text>
+  <line
+   x1='39.960' y1='39.960' x2='89.880' y2='39.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <text
+   x='39.960' y='26.040' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k2985&quot;, &quot;_self&quot;)'>2985</text>
+  </svg></div>
+
+<pre>(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))</pre>
+
+<p id="k2985">Item <a href="#t2985">2985</a>, Child: <a href="#k2988">2988</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='79.920pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 79.920 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>(enc r2 (exp h sec1))</title>
+   <circle cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2 (exp h sec1))</title>
+   <circle style='fill: red;' cx='39.960' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1)))</title>
+   <circle cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc h (ltk a b)))</title>
+   <circle style='fill: red;' cx='39.960' cy='114.960' r='6.000'/></g>
+  <g><title>((r1 r1) (r2 r2) (a a) (b b) (h h) (sec1 sec1))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>server</text></g>
+  <text
+   x='39.960' y='39.960' style='text-anchor: middle;'>EKE_DH 2985</text>
+  </svg></div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r1 r2 text) (a b name) (h base) (sec1 rndx))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h h) (sec1 sec1))
+  (absent (sec1 h))
+  (non-orig (ltk a b))
+  (uniq-gen sec1)
+  (uniq-orig r1)
+  (comment &quot;---Server&apos;s point-of-view&quot;)
+  (label 2985)
+  (unrealized (0 0) (0 2))
+  (origs (r1 (0 1)))
+  (comment &quot;2 in cohort - 2 not yet seen&quot;))</pre>
+
+<p id="k2988">Item <a href="#t2985">2988</a>, Parent: <a href="#k2985">2985</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='179.880pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 179.880 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='264.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <path
+   d='M 139.920 264.960 Q 92.940 264.960 45.960 264.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(enc r1 r2 (exp (gen) (mul sec1 sec)))</title>
+   <circle cx='139.920' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp (gen) (mul sec1 sec))))</title>
+   <circle style='fill: blue;' cx='139.920' cy='189.960' r='6.000'/></g>
+  <path
+   d='M 139.920 114.960 Q 92.940 114.960 45.960 114.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2 (exp (gen) (mul sec1 sec)))</title>
+   <circle cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2 (exp (gen) (mul sec1 sec)))</title>
+   <circle style='fill: blue;' cx='39.960' cy='264.960' r='6.000'/></g>
+  <path
+   d='M 39.960 189.960 Q 86.940 189.960 133.920 189.960'
+   style='stroke-width: 0.960; stroke: black; marker-end: url(#arrow); fill: none;'/>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp (gen) (mul sec1 sec))))</title>
+   <circle cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle style='fill: blue;' cx='39.960' cy='114.960' r='6.000'/></g>
+  <g>
+   <title>((r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1)) (sec sec))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>client</text>
+   </g>
+  <g>
+   <title>((r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec)) (sec1 sec1))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>server</text></g>
+  <text
+   x='89.940' y='39.960'
+   style='text-anchor: middle;'>EKE_DH 2988 (realized)</text></svg>
+ </div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r1 r2 text) (a b name) (sec1 sec rndx))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h (exp (gen) sec))
+    (sec1 sec1))
+  (defstrand client 3 (r1 r1) (r2 r2) (a a) (b b) (g (exp (gen) sec1))
+    (sec sec))
+  (precedes ((0 1) (1 1)) ((1 0) (0 0)) ((1 2) (0 2)))
+  (absent (sec1 (exp (gen) sec)))
+  (non-orig (ltk a b))
+  (uniq-gen sec1 sec)
+  (uniq-orig r1)
+  (operation encryption-test (displaced 2 1 client 1)
+    (enc (exp (gen) sec-0) (ltk a-0 b-0)) (0 0))
+  (label 2988)
+  (parent 2985)
+  (unrealized)
+  (shape)
+  (maps
+    ((0) ((a a) (b b) (sec1 sec1) (r1 r1) (h (exp (gen) sec)) (r2 r2))))
+  (origs (r1 (0 1))))</pre>
+
+<p id="t3016">Tree <a href="#top">3016</a>, POV <a href="#k3016">3016</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='79.920pt' height='79.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 79.920 79.920' font-size='12.000'>
+  <text
+   x='39.960' y='26.040' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k3016&quot;, &quot;_self&quot;)'>3016</text>
+  </svg></div>
+
+<pre>(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))</pre>
+
+<p id="k3016">Item <a href="#t3016">3016</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='379.800pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 379.800 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='339.840' y1='114.960' x2='339.840' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='239.880' y1='114.960' x2='239.880' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>sec1</title><circle cx='339.840' cy='189.960' r='6.000'/>
+   </g>
+  <g><title>sec1</title>
+   <circle style='fill: red;' cx='339.840' cy='114.960' r='6.000'/></g>
+  <g><title>sec</title><circle cx='239.880' cy='189.960' r='6.000'/></g>
+  <g><title>sec</title>
+   <circle style='fill: red;' cx='239.880' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2-0 (exp h sec1))</title>
+   <circle cx='139.920' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2-0 (exp h sec1))</title>
+   <circle style='fill: red;' cx='139.920' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1)))</title>
+   <circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc h (ltk a b)))</title>
+   <circle style='fill: red;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2 (exp g sec))</title>
+   <circle style='fill: red;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1-0 r2 (exp g sec))</title>
+   <circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>(cat (enc g (ltk a b)) (enc r1-0 (exp g sec)))</title>
+   <circle style='fill: red;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g><title>((r1 r1) (r2 r2-0) (a a) (b b) (h h) (sec1 sec1))</title>
+   <text
+    x='139.920' y='77.460' style='text-anchor: middle;'>server</text>
+   </g>
+  <g><title>((r1 r1-0) (r2 r2) (a a) (b b) (g g) (sec sec))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>client</text></g>
+  <text
+   x='189.900' y='39.960'
+   style='text-anchor: middle;'>EKE_DH 3016</text></svg></div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r1 r2 r1-0 r2-0 text) (a b name) (g h base) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1-0) (r2 r2) (a a) (b b) (g g) (sec sec))
+  (defstrand server 4 (r1 r1) (r2 r2-0) (a a) (b b) (h h) (sec1 sec1))
+  (deflistener sec)
+  (deflistener sec1)
+  (absent (sec1 h))
+  (non-orig (ltk a b))
+  (uniq-gen sec sec1)
+  (uniq-orig r1 r2)
+  (comment &quot;For Testing only--- Client and Server&apos;s point-of-view&quot;)
+  (label 3016)
+  (unrealized (0 1) (0 3) (1 0) (1 2) (2 0) (3 0))
+  (preskeleton)
+  (origs (r1 (1 1)) (r2 (0 2)))
+  (comment &quot;Not a skeleton&quot;))</pre>
+
+<p id="t3134">Tree <a href="#top">3134</a>, POV <a href="#k3134">3134</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='79.920pt' height='79.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 79.920 79.920' font-size='12.000'>
+  <text
+   x='39.960' y='26.040' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k3134&quot;, &quot;_self&quot;)'>3134</text>
+  </svg></div>
+
+<pre>(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))</pre>
+
+<p id="k3134">Item <a href="#t3134">3134</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='279.840pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 279.840 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='239.880' y1='114.960' x2='239.880' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>sec1</title><circle cx='239.880' cy='189.960' r='6.000'/>
+   </g>
+  <g><title>sec1</title>
+   <circle style='fill: blue;' cx='239.880' cy='114.960' r='6.000'/></g>
+  <g><title>sec</title><circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>sec</title>
+   <circle style='fill: red;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2 (exp g sec))</title>
+   <circle style='fill: red;' cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2 (exp g sec))</title>
+   <circle cx='39.960' cy='264.960' r='6.000'/></g>
+  <g><title>(cat (enc g (ltk a b)) (enc r1 (exp g sec)))</title>
+   <circle style='fill: red;' cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc (exp (gen) sec) (ltk a b)))</title>
+   <circle cx='39.960' cy='114.960' r='6.000'/></g>
+  <g><title>((r1 r1) (r2 r2) (a a) (b b) (g g) (sec sec))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>client</text></g>
+  <text
+   x='139.920' y='39.960'
+   style='text-anchor: middle;'>EKE_DH 3134</text></svg></div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r2 r1 text) (a b name) (g base) (sec sec1 rndx))
+  (defstrand client 4 (r1 r1) (r2 r2) (a a) (b b) (g g) (sec sec))
+  (deflistener sec)
+  (deflistener sec1)
+  (non-orig (ltk a b))
+  (uniq-gen sec)
+  (uniq-orig r2)
+  (comment
+    &quot;Client&apos;s point-of-view.---Are the secrets sec &amp; sec1 leaked?&quot;)
+  (label 3134)
+  (unrealized (0 1) (0 3) (1 0))
+  (preskeleton)
+  (origs (r2 (0 2)))
+  (comment &quot;Not a skeleton&quot;))</pre>
+
+<p id="t3163">Tree <a href="#top">3163</a>, POV <a href="#k3163">3163</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='79.920pt' height='79.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 79.920 79.920' font-size='12.000'>
+  <text
+   x='39.960' y='26.040' style='text-anchor: middle; fill: black;'
+   onclick='window.open(&quot;#k3163&quot;, &quot;_self&quot;)'>3163</text>
+  </svg></div>
+
+<pre>(defprotocol EKE_DH diffie-hellman
+  (defrole client
+    (vars (a b name) (sec rndx) (g base) (r1 r2 text))
+    (trace (send (cat a (enc (exp (gen) sec) (ltk a b))))
+      (recv (cat (enc g (ltk a b)) (enc r1 (exp g sec))))
+      (send (enc r1 r2 (exp g sec))) (recv (enc r2 (exp g sec))))
+    (uniq-gen sec))
+  (defrole server
+    (vars (a b name) (sec1 rndx) (h base) (r1 r2 text))
+    (trace (recv (cat a (enc h (ltk a b))))
+      (send
+        (cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1))))
+      (recv (enc r1 r2 (exp h sec1))) (send (enc r2 (exp h sec1))))
+    (uniq-gen sec1)
+    (absent (sec1 h))))</pre>
+
+<p id="k3163">Item <a href="#t3163">3163</a>.</p>
+
+<div>
+ <svg
+  class='diagram' width='279.840pt' height='379.920pt'
+  xmlns='http://www.w3.org/2000/svg' version='1.1'
+  viewBox='0 0 279.840 379.920' font-size='12.000'>
+  <defs>
+   <marker
+    id='arrow' orient='auto' markerWidth='5' markerHeight='10' refX='5'
+    refY='5'>
+    <path
+     d='M 0 0 5 5 0 10'
+     style='stroke-width: 2; fill: none; stroke: black;'/></marker>
+   </defs>
+  <line
+   x1='239.880' y1='114.960' x2='239.880' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='139.920' y1='114.960' x2='139.920' y2='189.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <line
+   x1='39.960' y1='114.960' x2='39.960' y2='339.960'
+   style='stroke-width: 0.960; stroke: gray;'/>
+  <g><title>sec1</title><circle cx='239.880' cy='189.960' r='6.000'/>
+   </g>
+  <g><title>sec1</title>
+   <circle style='fill: red;' cx='239.880' cy='114.960' r='6.000'/></g>
+  <g><title>sec</title><circle cx='139.920' cy='189.960' r='6.000'/></g>
+  <g><title>sec</title>
+   <circle style='fill: blue;' cx='139.920' cy='114.960' r='6.000'/></g>
+  <g><title>(enc r2 (exp h sec1))</title>
+   <circle cx='39.960' cy='339.960' r='6.000'/></g>
+  <g><title>(enc r1 r2 (exp h sec1))</title>
+   <circle style='fill: red;' cx='39.960' cy='264.960' r='6.000'/></g>
+  <g>
+   <title>(cat (enc (exp (gen) sec1) (ltk a b)) (enc r1 (exp h sec1)))</title>
+   <circle cx='39.960' cy='189.960' r='6.000'/></g>
+  <g><title>(cat a (enc h (ltk a b)))</title>
+   <circle style='fill: red;' cx='39.960' cy='114.960' r='6.000'/></g>
+  <g><title>((r1 r1) (r2 r2) (a a) (b b) (h h) (sec1 sec1))</title>
+   <text
+    x='39.960' y='77.460' style='text-anchor: middle;'>server</text></g>
+  <text
+   x='139.920' y='39.960'
+   style='text-anchor: middle;'>EKE_DH 3163</text></svg></div>
+
+<pre>(defskeleton EKE_DH
+  (vars (r1 r2 text) (a b name) (h base) (sec sec1 rndx))
+  (defstrand server 4 (r1 r1) (r2 r2) (a a) (b b) (h h) (sec1 sec1))
+  (deflistener sec)
+  (deflistener sec1)
+  (absent (sec1 h))
+  (non-orig (ltk a b))
+  (uniq-gen sec1)
+  (uniq-orig r1)
+  (comment
+    &quot;Server&apos;s point-of-view.---Are the secrets sec &amp; sec1 leaked?&quot;)
+  (label 3163)
+  (unrealized (0 0) (0 2) (2 0))
+  (preskeleton)
+  (origs (r1 (0 1)))
+  (comment &quot;Not a skeleton&quot;))</pre>
+
+</body>
+</html>
